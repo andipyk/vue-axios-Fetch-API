@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>VUE AXIOS | Fetch API</title>
+    <!-- BOOTSTRAP -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <h1>Fetch API | ZIP CODE</h1>
+            <form>
+                <div class="form-group">
+                    <label for="zipcode">Zip Code</label>
+                    <input type="text" name="zipcode" id="zipcode" class="form-control" v-model="zipcode">
+                    <span class="city-span">{{namecity}}</span>
+                </div><!-- /.form-group -->
+                    <button class="btn btn-primary">Detail</button>
+            </form>
+        </div><!-- /.container -->       
+    </div><!-- /#app -->
+
+
+    <script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
+
+    <script>
+    var app = new Vue({
+        el:'#app',
+        data : {
+            zipcode : '',
+            namecity : ''
+        },
+        watch:{
+            zipcode: function(){
+                this.namecity = ''
+                if(this.zipcode.length == 5){
+                    this.lookupZipCode()
+                }
+            }
+        },
+        methods: {
+            lookupZipCode: _.debounce(function(){
+                var vm = this
+                vm.namecity = "Searching.."
+                axios.get('http://ziptasticapi.com/' + vm.zipcode)
+                    .then(function(response){
+                        app.namecity = response.data.city + ' | '+response.data.state
+                    })
+                    .catch(function (error) {
+                        app.namecity = "Invalide ZIPCODE"
+                    })
+            }, 500)
+        }
+    })
+    </script>
+</body>
+</html>
